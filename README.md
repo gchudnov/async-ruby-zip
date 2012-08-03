@@ -19,12 +19,12 @@ include AsyncZip
 
 
 # Non-blocking zip-file creation:
-AsyncZip.create('output.zip', ['./images/DSC00012.JPG', './images/DSC00018.JPG', './images/DSC00040.JPG']) do |archive_filename|
-  puts 'called on completion'
+AsyncZip.create('./output.zip', ['./images/DSC00012.JPG', './images/DSC00018.JPG', './images/DSC00040.JPG']) do |archive|
+  puts 'async, called after zip is done'
 end
 
 # Non-blocking zip-file extraction:
-AsyncZip.extract('output.zip', 'destination_folder') do |file_array|
-  puts 'called on completion'
+AsyncZip.extract('./output.zip', './extracted') do |file_array|
+  puts 'called async when done with list of filenames'
 end
 

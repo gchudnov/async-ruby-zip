@@ -1,12 +1,41 @@
 #include "archive.h"
-//#include "carchive.h"
-//#include "cerror.h"
+#include "carchive.h"
+#include "cerror.h"
 #include "carray.h"
 #include "archive_data.h"
 #include <pthread.h>
 
 static VALUE az_create(VALUE self, VALUE zip_path, VALUE files);
 static VALUE az_extract(VALUE self, VALUE zip_path, VALUE dest_path);
+
+
+static void* az_archive_thread_func(void* data)
+{
+    archive_data_t* adata = (archive_data_t*)data;
+    if(!adata)
+        return NULL;
+
+    if(adata->zip_path && adata->files_arr)
+    {
+        cerror_t err = carchive_create(adata->zip_path, adata->files_arr);
+        if(cerror_is_error(&err))
+        {
+            adata->err_str = strdup(err.message);
+        }
+
+        cerror_free_message(&err);
+    }
+    else if(adata->zip_path && adata->dst_path)
+    {
+        cerror_t err = carchive_extract(adata->zip_path, adata->dst_path);
+        if(cerror_is_error(&err))
+        {
+            adata->err_str = strdup(err.message);
+        }
+
+        cerror_free_message(&err);
+    }
+}
 
 
 /* Add files to archive */
@@ -41,18 +70,8 @@ static VALUE az_create(VALUE self, VALUE zip_path, VALUE files)
 
         rb_gc_register_address(&adata->proc);
 
+        az_archive_thread_func(adata);
         //az_enqueue_task(az_archive_thread_func, adata);
-
-
-//        // create
-//        cerror_t err = carchive_create("./output.zip", parr);
-//        if(cerror_is_error(&err))
-//        {
-//            printf("ERROR: %s\n", err.message);
-//        }
-//
-//        cerror_free_message(&err);
-//        carray_str_destroy(parr);
     }
 
     return self;
@@ -61,9 +80,6 @@ static VALUE az_create(VALUE self, VALUE zip_path, VALUE files)
 /* Extract files from archive */
 static VALUE az_extract(VALUE self, VALUE zip_path, VALUE dest_path)
 {
-    const char* zip_path_str;
-    const char* dest_path_str;
-
     rb_need_block();
     VALUE proc = rb_block_proc();
 
@@ -72,18 +88,8 @@ static VALUE az_extract(VALUE self, VALUE zip_path, VALUE dest_path)
 
     rb_gc_register_address(&adata->proc);
 
+    az_archive_thread_func(adata);
     //az_enqueue_task(az_archive_thread_func, adata);
-
-
-
-    // EXTRACT
-
-//    err = carchive_extract("./output.zip", "./extracted");
-//    if(cerror_is_error(&err))
-//    {
-//        printf("ERROR: %s\n", err.message);
-//    }
-//    cerror_free_message(&err);
 
     return self;
 }
