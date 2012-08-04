@@ -46,10 +46,10 @@ static VALUE az_handle_proc(void *d)
     // Invoke callback with task argument
     VALUE proc = (VALUE)adata->proc;
 
-    int is_create = (adata->zip_path && !adata->dst_path);
+    int is_create = ((adata->zip_path && !adata->dst_path) ? 1 : 0);
 
     VALUE task = rb_class_new_instance(0, NULL, cTask);
-    az_task_init(task, (is_create ? adata->zip_path : adata->dst_path), (is_create ? adata->dst_path : adata->zip_path), adata->err_str, adata->files_arr);
+    az_task_init(task, (is_create ? NULL : adata->zip_path), (is_create ? adata->zip_path : adata->dst_path), adata->err_str, adata->files_arr);
     az_free_archive_data(adata);
 
     rb_funcall2(proc, rb_intern("call"), 1, &task);

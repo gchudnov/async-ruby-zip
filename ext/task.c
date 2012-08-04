@@ -30,7 +30,7 @@ void az_task_init(VALUE self, const char* src_path, const char* dst_path, const 
     rb_iv_set(self, "@error", (err_str ? rb_str_new2(err_str) : Qnil));
 
     // create an array
-    VALUE file_list = rb_ary_new();
+    VALUE arr = rb_ary_new();
     size_t len = carray_str_size(files_arr);
     if(len > 0)
     {
@@ -38,11 +38,10 @@ void az_task_init(VALUE self, const char* src_path, const char* dst_path, const 
         for(i = 0; i != len; ++i)
         {
             const char* s = carray_str_get(files_arr, i);
-            rb_ary_push(file_list, rb_str_new2(s));
+            rb_ary_push(arr, rb_str_new2(s));
         }
     }
-
-    rb_iv_set(self, "@files", file_list);
+    rb_iv_set(self, "@files", arr);
 }
 
 

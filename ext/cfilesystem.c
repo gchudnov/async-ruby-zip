@@ -87,14 +87,14 @@ char* cfilesystem_combine(const char* path1, const char* path2)
         size_t len1 = strlen(path1);
         size_t len2 = strlen(path2);
 
-        size_t newlen = len1 + len2 + 1 + (path1[len1 - 1] != '/' ? 1 : 0);
+        size_t newlen = len1 + len2 + 1 + ((path1[len1 - 1] != '/' && path2[0] != '/') ? 1 : 0);
         result = (char*)malloc(newlen);
         ptr = result;
 
         strcpy(ptr, path1);
         ptr += len1;
 
-        if(ptr[-1] != '/')
+        if((ptr[-1] != '/') && (path2[0] != '/'))
         {
             ptr[0] = '/';
             ++ptr;
