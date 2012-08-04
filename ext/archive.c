@@ -68,7 +68,7 @@ static VALUE az_create(VALUE self, VALUE files, VALUE zip_path)
             }
         }
 
-        archive_data_t* adata = av_make_archive_data(StringValuePtr(zip_path), NULL, parr);
+        archive_data_t* adata = az_make_archive_data(StringValuePtr(zip_path), NULL, parr);
         adata->proc = proc;
 
         rb_gc_register_address(&adata->proc);
@@ -86,7 +86,7 @@ static VALUE az_extract(VALUE self, VALUE zip_path, VALUE dest_path)
     rb_need_block();
     VALUE proc = rb_block_proc();
 
-    archive_data_t* adata = av_make_archive_data(StringValuePtr(zip_path), StringValuePtr(dest_path), NULL);
+    archive_data_t* adata = az_make_archive_data(StringValuePtr(zip_path), StringValuePtr(dest_path), NULL);
     adata->proc = proc;
 
     rb_gc_register_address(&adata->proc);

@@ -18,8 +18,8 @@ typedef struct _archive_data_t
 } archive_data_t;
 
 
-archive_data_t* av_make_archive_data(const char* zip_path, const char* dst_path, carray_str_t* files_arr);
-void av_free_archive_data(archive_data_t* adata);
+archive_data_t* az_make_archive_data(const char* zip_path, const char* dst_path, carray_str_t* files_arr);
+void az_free_archive_data(archive_data_t* adata);
 
 #endif
 

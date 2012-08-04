@@ -1,7 +1,7 @@
 #include "archive_data.h"
 
 // Create a new archive-data structure
-archive_data_t* av_make_archive_data(const char* zip_path, const char* dst_path, carray_str_t* files_arr)
+archive_data_t* az_make_archive_data(const char* zip_path, const char* dst_path, carray_str_t* files_arr)
 {
     archive_data_t* adata = (archive_data_t*)malloc(sizeof(archive_data_t));
     if(adata)
@@ -28,7 +28,7 @@ archive_data_t* av_make_archive_data(const char* zip_path, const char* dst_path,
 }
 
 // Free archive-data structure
-void av_free_archive_data(archive_data_t* adata)
+void az_free_archive_data(archive_data_t* adata)
 {
     if(!adata)
         return;
