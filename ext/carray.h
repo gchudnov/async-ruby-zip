@@ -16,7 +16,7 @@ carray_str_t* carray_str_create(size_t count);
 void carray_str_destroy(carray_str_t* arr);
 
 /* Utilities */
-size_t carray_str_size(carray_str_t* arr);
+size_t carray_str_size(const carray_str_t* arr);
 
 /* Accessors */
 const char* carray_str_get(const carray_str_t* arr, size_t index);

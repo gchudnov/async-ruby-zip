@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Grigoriy Chudnov"]
-  s.date = "2012-08-03"
+  s.date = "2012-08-04"
   s.description = "Non-blocking zip reading and writing for Ruby."
   s.email = "g.chudnov@gmail.com"
   s.extensions = ["ext/extconf.rb"]
@@ -29,6 +29,8 @@ Gem::Specification.new do |s|
     "ext/archive_data_fwd.h",
     "ext/async_zip.c",
     "ext/async_zip.h",
+    "ext/callback.c",
+    "ext/callback.h",
     "ext/carchive.c",
     "ext/carchive.h",
     "ext/carray.c",
@@ -38,6 +40,10 @@ Gem::Specification.new do |s|
     "ext/cfilesystem.c",
     "ext/cfilesystem.h",
     "ext/extconf.rb",
+    "ext/task.c",
+    "ext/task.h",
+    "ext/writer.c",
+    "ext/writer.h",
     "lib/async_zip.rb",
     "lib/async_zip/version.rb"
   ]

@@ -3,7 +3,9 @@
 #include "cerror.h"
 #include "carray.h"
 #include "archive_data.h"
-#include <pthread.h>
+#include "callback.h"
+#include "writer.h"
+
 
 static VALUE az_create(VALUE self, VALUE zip_path, VALUE files);
 static VALUE az_extract(VALUE self, VALUE zip_path, VALUE dest_path);
@@ -15,31 +17,32 @@ static void* az_archive_thread_func(void* data)
     if(!adata)
         return NULL;
 
-    if(adata->zip_path && adata->files_arr)
-    {
-        cerror_t err = carchive_create(adata->zip_path, adata->files_arr);
-        if(cerror_is_error(&err))
-        {
-            adata->err_str = strdup(err.message);
-        }
+    cerror_t err = { 0 };
 
-        cerror_free_message(&err);
-    }
-    else if(adata->zip_path && adata->dst_path)
+    if(adata->zip_path && !adata->dst_path) // create
     {
-        cerror_t err = carchive_extract(adata->zip_path, adata->dst_path);
-        if(cerror_is_error(&err))
-        {
-            adata->err_str = strdup(err.message);
-        }
-
-        cerror_free_message(&err);
+        err = carchive_create(adata->zip_path, adata->files_arr);
     }
+    else if(adata->zip_path && adata->dst_path) // extract
+    {
+        err = carchive_extract(adata->zip_path, adata->dst_path, &adata->files_arr);
+    }
+
+    // error
+    if(cerror_is_error(&err))
+    {
+        adata->err_str = strdup(err.message);
+    }
+    cerror_free_message(&err);
+
+    az_add_to_event_qeueue(adata);
+
+    return NULL;
 }
 
 
 /* Add files to archive */
-static VALUE az_create(VALUE self, VALUE zip_path, VALUE files)
+static VALUE az_create(VALUE self, VALUE files, VALUE zip_path)
 {
     rb_need_block();
     VALUE proc = rb_block_proc();
@@ -70,8 +73,8 @@ static VALUE az_create(VALUE self, VALUE zip_path, VALUE files)
 
         rb_gc_register_address(&adata->proc);
 
-        az_archive_thread_func(adata);
-        //az_enqueue_task(az_archive_thread_func, adata);
+        //
+        az_enqueue_task(az_archive_thread_func, adata);
     }
 
     return self;
@@ -88,8 +91,8 @@ static VALUE az_extract(VALUE self, VALUE zip_path, VALUE dest_path)
 
     rb_gc_register_address(&adata->proc);
 
-    az_archive_thread_func(adata);
-    //az_enqueue_task(az_archive_thread_func, adata);
+    //
+    az_enqueue_task(az_archive_thread_func, adata);
 
     return self;
 }

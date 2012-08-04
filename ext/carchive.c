@@ -1,4 +1,5 @@
 #include "carchive.h"
+#include "carray.h"
 #include "cfilesystem.h"
 #include "cerror.h"
 #include <zip.h>
@@ -94,7 +95,7 @@ cerror_t carchive_create(const char* zip_path, const carray_str_t* parr)
 
 
 // Extract files from the archive
-cerror_t carchive_extract(const char* zip_path, const char* dest_path)
+cerror_t carchive_extract(const char* zip_path, const char* dest_path, carray_str_t** pparr)
 {
     cerror_t result = { 0 };
 
@@ -118,6 +119,8 @@ cerror_t carchive_extract(const char* zip_path, const char* dest_path)
     {
         if(!cfilesystem_exists(dest_path))
             cfilesystem_create_directories(dest_path);
+
+        *pparr = carray_str_create((size_t)num);
 
         struct zip_stat st = { 0 };
         uint64_t i;
@@ -144,6 +147,8 @@ cerror_t carchive_extract(const char* zip_path, const char* dest_path)
 
                 char* filename = (st.valid & ZIP_STAT_NAME ? strdup(st.name) : cfilesystem_tempfilename());
                 char* dest_filepath = cfilesystem_combine(dest_path, filename);
+
+                carray_str_set(*pparr, (size_t)i, dest_filepath);
 
                 FILE* fp = fopen(dest_filepath, "w");
                 if(!fp)

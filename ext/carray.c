@@ -32,8 +32,11 @@ void carray_str_destroy(carray_str_t* parr)
 }
 
 //
-size_t carray_str_size(carray_str_t* arr)
+size_t carray_str_size(const carray_str_t* arr)
 {
+    if(!arr)
+        return 0;
+
     return arr->size;
 }
 
