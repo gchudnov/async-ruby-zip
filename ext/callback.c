@@ -5,8 +5,6 @@
 #include <pthread.h>
 
 
-pthread_once_t et_once = PTHREAD_ONCE_INIT;
-
 typedef struct _adata_wait_t
 {
     archive_data_t* adata;
@@ -112,8 +110,6 @@ static void az_create_event_thread(void)
 /* Add the archive data to the event queue */
 void az_add_to_event_qeueue(archive_data_t* adata)
 {
-    pthread_once(&et_once, az_create_event_thread);
-
     pthread_mutex_lock(&az_proc_mutex);
     az_proc_queue_push(adata);
     pthread_mutex_unlock(&az_proc_mutex);

@@ -21,6 +21,12 @@ static VALUE az_task_error(VALUE self)
     return rb_iv_get(self, "@error");
 }
 
+/* Get the files */
+static VALUE az_task_error(VALUE self)
+{
+    return rb_iv_get(self, "@files");
+}
+
 
 /* Initialize the object, called before the callback is invoked */
 void az_task_init(VALUE self, const char* src_path, const char* dst_path, const char* err_str, const carray_str_t* files_arr)
@@ -52,4 +58,5 @@ void init_async_zip_task()
     rb_define_method(cTask, "src", az_task_src, 0);
     rb_define_method(cTask, "dst", az_task_dst, 0);
     rb_define_method(cTask, "error", az_task_error, 0);
+    rb_define_method(cTask, "files", az_task_files, 0);
 }
