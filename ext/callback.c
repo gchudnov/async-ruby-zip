@@ -119,3 +119,8 @@ void az_add_to_event_qeueue(archive_data_t* adata)
     pthread_mutex_unlock(&az_proc_mutex);
     pthread_cond_signal(&az_proc_cond);
 }
+
+void init_async_event_thread(void)
+{
+    az_create_event_thread();
+}

@@ -1,6 +1,7 @@
 #include "async_zip.h"
 #include "archive.h"
 #include "task.h"
+#include "callback.h"
 
 VALUE mAsyncZip, eZipError;
 
@@ -13,4 +14,5 @@ void Init_async_zip_ext()
     //
     init_async_zip_archive();
     init_async_zip_task();
+    init_async_event_thread();
 }
