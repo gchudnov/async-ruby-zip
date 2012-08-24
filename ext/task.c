@@ -22,7 +22,7 @@ static VALUE az_task_error(VALUE self)
 }
 
 /* Get the files */
-static VALUE az_task_error(VALUE self)
+static VALUE az_task_files(VALUE self)
 {
     return rb_iv_get(self, "@files");
 }
