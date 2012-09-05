@@ -105,7 +105,7 @@ static void az_stop_waiting_for_adata(void* w)
 }
 
 
-/* ruby event thread, waiting for processed archiveations (invokes callbacks) */
+/* ruby event thread, waiting for processed archives to invoke a callback */
 static VALUE az_event_thread(void *unused)
 {
     fprintf(stderr, "+az_event_thread\n");
@@ -126,9 +126,13 @@ static VALUE az_event_thread(void *unused)
 }
 
 /* Initialize Ruby Event Thread for invokation of user-provider callbacks */
-static void az_create_event_thread(void)
+void az_create_event_thread(void)
 {
+    fprintf(stderr, "+az_create_event_thread\n");
+
     rb_thread_create(az_event_thread, NULL);
+
+    fprintf(stderr, "-az_create_event_thread\n");
 }
 
 /* Add the archive data to the event queue */
@@ -144,7 +148,7 @@ void az_add_to_event_qeueue(archive_data_t* adata)
     fprintf(stderr, "-az_add_to_event_qeueue\n");
 }
 
-void init_async_event_thread(void)
+void init_async_zip_event_thread(void)
 {
     az_create_event_thread();
 }
