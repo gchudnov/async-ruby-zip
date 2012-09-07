@@ -97,8 +97,6 @@ cerror_t carchive_create(const char* zip_path, const carray_str_t* parr)
 // Extract files from the archive
 cerror_t carchive_extract(const char* zip_path, const char* dest_path, carray_str_t** pparr)
 {
-    fprintf(stderr, "+carchive_extract\n");
-
     cerror_t result = { 0 };
 
     int err = 0;
@@ -109,8 +107,6 @@ cerror_t carchive_extract(const char* zip_path, const char* dest_path, carray_st
         cerror_asprintf(&result.message, "cannot open zip archive for reading: '%s'", zip_path);
         return result;
     }
-
-    //fprintf(stderr, "+carchive_extract - A\n");
 
     uint64_t num = zip_get_num_entries(z, 0);
     if(num == (uint64_t)-1)
@@ -123,16 +119,12 @@ cerror_t carchive_extract(const char* zip_path, const char* dest_path, carray_st
         if(!cfilesystem_exists(dest_path))
             cfilesystem_create_directories(dest_path);
 
-        //fprintf(stderr, "+carchive_extract - B1\n");
-
         *pparr = carray_str_create((size_t)num);
 
         struct zip_stat st = { 0 };
         uint64_t i;
         for(i = 0; i != num; ++i)
         {
-            //fprintf(stderr, "+carchive_extract - B1-1\n");
-
             zip_stat_init(&st);
             err = zip_stat_index(z, i, 0, &st);
             if(err < 0)
@@ -141,8 +133,6 @@ cerror_t carchive_extract(const char* zip_path, const char* dest_path, carray_st
                 cerror_zip_asprintf(&result.message, z, "cannot read statistics for entry");
                 break;
             }
-
-            //fprintf(stderr, "+carchive_extract - B1-2\n");
 
             if(st.valid & ZIP_STAT_SIZE)
             {
@@ -153,8 +143,6 @@ cerror_t carchive_extract(const char* zip_path, const char* dest_path, carray_st
                     cerror_zip_asprintf(&result.message, z, "cannot read entry");
                     break;
                 }
-
-                //fprintf(stderr, "+carchive_extract - B1-2-1\n");
 
                 char* filename = (st.valid & ZIP_STAT_NAME ? strdup(st.name) : cfilesystem_tempfilename());
                 char* dest_filepath = cfilesystem_combine(dest_path, filename);
@@ -171,8 +159,6 @@ cerror_t carchive_extract(const char* zip_path, const char* dest_path, carray_st
                     break;
                 }
 
-                //fprintf(stderr, "+carchive_extract - B1-2-2\n");
-
                 char* bytes = (char*)malloc(st.size);
                 err = zip_fread(f, bytes, st.size);
                 if(err < 0)
@@ -185,8 +171,6 @@ cerror_t carchive_extract(const char* zip_path, const char* dest_path, carray_st
                     fclose(fp);
                     break;
                 }
-
-                //fprintf(stderr, "+carchive_extract - B1-2-3\n");
 
                 err = fwrite(bytes, st.size, 1, fp);
                 if(!err)
@@ -205,8 +189,6 @@ cerror_t carchive_extract(const char* zip_path, const char* dest_path, carray_st
                 free(filename);
                 free(dest_filepath);
 
-                //fprintf(stderr, "+carchive_extract - B1-2-4\n");
-
                 err = zip_fclose(f);
                 if(err)
                 {
@@ -214,13 +196,9 @@ cerror_t carchive_extract(const char* zip_path, const char* dest_path, carray_st
                     cerror_zip_asprintf(&result.message, z, "cannot close zip entry");
                     break;
                 }
-
-                //fprintf(stderr, "+carchive_extract - B1-2-5\n");
             }
         }
     }
-
-    //fprintf(stderr, "+carchive_extract - C\n");
 
     if(cerror_is_error(&result))
     {
@@ -235,8 +213,6 @@ cerror_t carchive_extract(const char* zip_path, const char* dest_path, carray_st
             cerror_zip_asprintf(&result.message, z, "cannot close zip archive");
         }
     }
-
-    fprintf(stderr, "-carchive_extract\n");
 
     return result;
 }

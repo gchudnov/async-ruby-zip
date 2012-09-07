@@ -13,8 +13,6 @@ static VALUE az_extract(VALUE self, VALUE zip_path, VALUE dest_path);
 
 static void* az_archive_thread_func(void* data)
 {
-    fprintf(stderr, "+az_archive_thread_func\n");
-
     archive_data_t* adata = (archive_data_t*)data;
     if(!adata)
         return NULL;
@@ -39,8 +37,6 @@ static void* az_archive_thread_func(void* data)
 
     az_add_to_event_qeueue(adata);
 
-    fprintf(stderr, "-az_archive_thread_func\n");
-
     return NULL;
 }
 
@@ -48,8 +44,6 @@ static void* az_archive_thread_func(void* data)
 /* Add files to archive */
 static VALUE az_create(VALUE self, VALUE files, VALUE zip_path)
 {
-    fprintf(stderr, "+az_create\n");
-
     rb_need_block();
     VALUE proc = rb_block_proc();
 
@@ -83,16 +77,12 @@ static VALUE az_create(VALUE self, VALUE files, VALUE zip_path)
         az_enqueue_task(az_archive_thread_func, adata);
     }
 
-    fprintf(stderr, "-az_create\n");
-
     return self;
 }
 
 /* Extract files from archive */
 static VALUE az_extract(VALUE self, VALUE zip_path, VALUE dest_path)
 {
-    fprintf(stderr, "+az_extract\n");
-
     rb_need_block();
     VALUE proc = rb_block_proc();
 
@@ -103,8 +93,6 @@ static VALUE az_extract(VALUE self, VALUE zip_path, VALUE dest_path)
 
     //
     az_enqueue_task(az_archive_thread_func, adata);
-
-    fprintf(stderr, "-az_extract\n");
 
     return self;
 }

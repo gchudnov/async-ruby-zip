@@ -21,42 +21,21 @@ pthread_cond_t az_writer_cond = PTHREAD_COND_INITIALIZER;
 az_write_task_t* az_writer_queue = NULL;
 
 
-/* Dumps write task */
-static void dump_task(const char* title, az_write_task_t* wtask)
-{
-    if(wtask)
-    {
-        fprintf(stderr, "{%s}, WRITE_TASK: [%p], next: [%p]\n", title, wtask, wtask->next);
-    }
-    else
-    {
-        fprintf(stderr, "{%s}, WRITE_TASK: [NULL]\n", title);
-    }
-}
-
 /* Push new task to front of the queue */
 static void az_write_task_queue_push(az_write_task_t* wtask)
 {
-    fprintf(stderr, "+az_write_task_queue_push\n");
-
     wtask->next = az_writer_queue;
     az_writer_queue = wtask;
-
-    fprintf(stderr, "-az_write_task_queue_push\n");
 }
 
 /* Pop next task from the queue; Returns NULL, when the queue is empty */
 static az_write_task_t* az_write_task_queue_pop(void)
 {
-    fprintf(stderr, "+az_write_task_queue_pop\n");
-
     az_write_task_t* wtask = az_writer_queue;
     if(wtask)
     {
         az_writer_queue = wtask->next;
     }
-
-    fprintf(stderr, "-az_write_task_queue_pop\n");
 
     return wtask;
 }
@@ -65,8 +44,6 @@ static az_write_task_t* az_write_task_queue_pop(void)
 /* Task processing queue */
 static void* az_writer_thread_func(void* data)
 {
-    fprintf(stderr, "+az_writer_thread_func\n");
-
     int is_running = 1;
     az_write_task_t* wtask = NULL;
 
@@ -83,16 +60,12 @@ static void* az_writer_thread_func(void* data)
         {
             if(wtask->func)
             {
-                fprintf(stderr, "  execute task\n");
-
                 wtask->func(wtask->data);
             }
 
             free(wtask);
         }
     }
-
-    fprintf(stderr, "-az_writer_thread_func\n");
 
     return NULL;
 }
@@ -108,8 +81,6 @@ static void az_init_writer_thread(void)
 /* asynchronously invoke the func with the provided data */
 void az_enqueue_task(archive_func_t func, void* data)
 {
-  fprintf(stderr, "+az_enqueue_task\n");
-
   pthread_once(&qt_once, az_init_writer_thread);
 
   pthread_mutex_lock(&az_writer_mutex);
@@ -122,6 +93,4 @@ void az_enqueue_task(archive_func_t func, void* data)
 
   pthread_mutex_unlock(&az_writer_mutex);
   pthread_cond_signal(&az_writer_cond);
-
-  fprintf(stderr, "-az_enqueue_task\n");
 }

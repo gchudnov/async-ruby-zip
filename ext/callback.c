@@ -20,26 +20,18 @@ archive_data_t* az_proc_queue = NULL;
 /* Push new callback to front of the queue */
 static void az_proc_queue_push(archive_data_t* adata)
 {
-    fprintf(stderr, "+az_proc_queue_push\n");
-
     adata->next = az_proc_queue;
     az_proc_queue = adata;
-
-    fprintf(stderr, "-az_proc_queue_push\n");
 }
 
 /* Pop next callback from the queue; Returns NULL, when the queue is empty */
 static archive_data_t* az_proc_queue_pop(void)
 {
-    fprintf(stderr, "+az_proc_queue_pop\n");
-
     archive_data_t* adata = az_proc_queue;
     if(adata)
     {
         az_proc_queue = adata->next;
     }
-
-    fprintf(stderr, "-az_proc_queue_pop\n");
 
     return adata;
 }
@@ -47,8 +39,6 @@ static archive_data_t* az_proc_queue_pop(void)
 /* Callback executed by Ruby Thread */
 static VALUE az_handle_proc(void *d)
 {
-    fprintf(stderr, "+az_handle_proc\n");
-
     archive_data_t* adata = (archive_data_t*)d;
 
     // Invoke callback with task argument
@@ -64,8 +54,6 @@ static VALUE az_handle_proc(void *d)
 
     rb_gc_unregister_address(&adata->proc);
 
-    fprintf(stderr, "-az_handle_proc\n");
-
     return Qnil;
 }
 
@@ -73,8 +61,6 @@ static VALUE az_handle_proc(void *d)
 /* Wait until we have some callbacks to process  */
 static VALUE az_wait_for_adata(void* w)
 {
-    fprintf(stderr, "+az_wait_for_adata\n");
-
     adata_wait_t* waiter = (adata_wait_t*)w;
 
     pthread_mutex_lock(&az_proc_mutex);
@@ -84,32 +70,24 @@ static VALUE az_wait_for_adata(void* w)
     }
     pthread_mutex_unlock(&az_proc_mutex);
 
-    fprintf(stderr, "-az_wait_for_adata\n");
-
     return Qnil;
 }
 
 /* Stop waiting for callbacks */
 static void az_stop_waiting_for_adata(void* w)
 {
-    fprintf(stderr, "+az_stop_waiting_for_adata\n");
-
     adata_wait_t* waiter = (adata_wait_t*)w;
 
     pthread_mutex_lock(&az_proc_mutex);
     waiter->abort = 1;
     pthread_mutex_unlock(&az_proc_mutex);
     pthread_cond_signal(&az_proc_cond);
-
-    fprintf(stderr, "-az_stop_waiting_for_adata\n");
 }
 
 
 /* ruby event thread, waiting for processed archives to invoke a callback */
 static VALUE az_event_thread(void *unused)
 {
-    fprintf(stderr, "+az_event_thread\n");
-
     adata_wait_t waiter = { .adata = NULL, .abort = 0 };
     while (!waiter.abort)
     {
@@ -120,32 +98,22 @@ static VALUE az_event_thread(void *unused)
         }
     }
 
-    fprintf(stderr, "-az_event_thread\n");
-
     return Qnil;
 }
 
 /* Initialize Ruby Event Thread for invokation of user-provider callbacks */
 void az_create_event_thread(void)
 {
-    fprintf(stderr, "+az_create_event_thread\n");
-
     rb_thread_create(az_event_thread, NULL);
-
-    fprintf(stderr, "-az_create_event_thread\n");
 }
 
 /* Add the archive data to the event queue */
 void az_add_to_event_qeueue(archive_data_t* adata)
 {
-    fprintf(stderr, "+az_add_to_event_qeueue\n");
-
     pthread_mutex_lock(&az_proc_mutex);
     az_proc_queue_push(adata);
     pthread_mutex_unlock(&az_proc_mutex);
     pthread_cond_signal(&az_proc_cond);
-
-    fprintf(stderr, "-az_add_to_event_qeueue\n");
 }
 
 void init_async_zip_event_thread(void)
