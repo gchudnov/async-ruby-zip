@@ -48,11 +48,10 @@ static VALUE az_handle_proc(void *d)
 
     VALUE task = rb_class_new_instance(0, NULL, cTask);
     az_task_init(task, (is_create ? NULL : adata->zip_path), (is_create ? adata->zip_path : adata->dst_path), adata->err_str, adata->files_arr);
-    az_free_archive_data(adata);
-
     rb_funcall2(proc, rb_intern("call"), 1, &task);
-
     rb_gc_unregister_address(&adata->proc);
+
+    az_free_archive_data(adata);
 
     return Qnil;
 }
