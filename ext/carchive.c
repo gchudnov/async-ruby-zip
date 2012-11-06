@@ -186,6 +186,7 @@ cerror_t carchive_extract(const char* zip_path, const char* dest_path, carray_st
 
                 fclose(fp);
 
+                free(bytes);
                 free(filename);
                 free(dest_filepath);
 
