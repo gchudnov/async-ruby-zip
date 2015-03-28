@@ -1,7 +1,6 @@
-async-ruby-zip
-==============
+# async-ruby-zip
 
-Non-blocking zip reading and writing for Ruby
+> Non-blocking zip reading and writing for Ruby
 
 
 ## Requirements.
@@ -27,4 +26,12 @@ end
 AsyncZip.extract('./output.zip', './extracted') do |task|
   puts task.inspect
 end
+```
 
+## Contact
+
+[Grigoriy Chudnov] (mailto:g.chudnov@gmail.com)
+
+## License
+
+Distributed under the [The MIT License (MIT)](https://github.com/gchudnov/inkjet/blob/master/LICENSE).
