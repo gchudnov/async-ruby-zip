@@ -3,13 +3,13 @@
 > Non-blocking zip reading and writing for Ruby
 
 
-## Requirements.
+## Requirements
 
   * OS X or Linux
   * MRI 1.9.2
   * libzip >=0.10.1
 
-## Example.
+## Example
 
 ```ruby
 require 'rubygems'
